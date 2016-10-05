@@ -130,13 +130,13 @@ public class StatsCollectorIT extends ParallelStatsEnabledIT {
         rs = conn.createStatement().executeQuery("EXPLAIN SELECT * FROM " + fullTableName);
         explainPlan = QueryUtil.getExplainPlan(rs);
         assertEquals(
-                "CLIENT 4-CHUNK 1 ROWS 34 BYTES PARALLEL 3-WAY FULL SCAN OVER " + fullTableName + "\n" +
+                "CLIENT 4-CHUNK 1 ROWS 28 BYTES PARALLEL 3-WAY FULL SCAN OVER " + fullTableName + "\n" +
                 "CLIENT MERGE SORT",
                 explainPlan);
         rs = conn.createStatement().executeQuery("EXPLAIN SELECT * FROM " + fullTableName + " WHERE k = 'a'");
         explainPlan = QueryUtil.getExplainPlan(rs);
         assertEquals(
-                "CLIENT 1-CHUNK 1 ROWS 202 BYTES PARALLEL 1-WAY POINT LOOKUP ON 1 KEY OVER " + fullTableName + "\n" +
+                "CLIENT 1-CHUNK 1 ROWS 204 BYTES PARALLEL 1-WAY POINT LOOKUP ON 1 KEY OVER " + fullTableName + "\n" +
                 "CLIENT MERGE SORT",
                 explainPlan);
         
@@ -445,7 +445,7 @@ public class StatsCollectorIT extends ParallelStatsEnabledIT {
         List<KeyRange> keyRanges = getAllSplits(conn, fullTableName);
         assertEquals(26, keyRanges.size());
         rs = conn.createStatement().executeQuery("EXPLAIN SELECT * FROM " + fullTableName);
-        assertEquals("CLIENT 26-CHUNK 25 ROWS 12420 BYTES PARALLEL 1-WAY FULL SCAN OVER " + fullTableName,
+        assertEquals("CLIENT 26-CHUNK 25 ROWS 12530 BYTES PARALLEL 1-WAY FULL SCAN OVER " + fullTableName,
                 QueryUtil.getExplainPlan(rs));
 
         ConnectionQueryServices services = conn.unwrap(PhoenixConnection.class).getQueryServices();
@@ -468,25 +468,25 @@ public class StatsCollectorIT extends ParallelStatsEnabledIT {
         assertTrue(rs.next());
         assertEquals("A", rs.getString(1));
         assertEquals(24, rs.getInt(2));
-        assertEquals(12144, rs.getInt(3));
+        assertEquals(12252, rs.getInt(3));
         assertEquals(11, rs.getInt(4));
 
         assertTrue(rs.next());
         assertEquals("B", rs.getString(1));
         assertEquals(20, rs.getInt(2));
-        assertEquals(5540, rs.getInt(3));
+        assertEquals(5600, rs.getInt(3));
         assertEquals(5, rs.getInt(4));
 
         assertTrue(rs.next());
         assertEquals("C", rs.getString(1));
         assertEquals(24, rs.getInt(2));
-        assertEquals(6652, rs.getInt(3));
+        assertEquals(6724, rs.getInt(3));
         assertEquals(6, rs.getInt(4));
 
         assertTrue(rs.next());
         assertEquals("D", rs.getString(1));
         assertEquals(24, rs.getInt(2));
-        assertEquals(6652, rs.getInt(3));
+        assertEquals(6724, rs.getInt(3));
         assertEquals(6, rs.getInt(4));
 
         assertFalse(rs.next());
@@ -531,7 +531,7 @@ public class StatsCollectorIT extends ParallelStatsEnabledIT {
             int startIndex = r.nextInt(strings.length);
             int endIndex = r.nextInt(strings.length - startIndex) + startIndex;
             long rows = endIndex - startIndex;
-            long c2Bytes = rows * 35;
+            long c2Bytes = rows * 37;
             rs = conn.createStatement().executeQuery(
                     "SELECT COLUMN_FAMILY,SUM(GUIDE_POSTS_ROW_COUNT),SUM(GUIDE_POSTS_WIDTH) from SYSTEM.STATS where PHYSICAL_NAME = '"
                             + fullTableName + "' AND GUIDE_POST_KEY>= cast('" + strings[startIndex]
